@@ -8,7 +8,7 @@
 
 - [ddns-go](#ddns-go)
   - [特性](#特性)
-  - [直接使用](#直接使用)
+  - [系统中使用](#系统中使用)
   - [Docker中使用](#docker中使用)
   - [使用IPv6](#使用ipv6)
   - [Webhook](#webhook)
@@ -22,23 +22,30 @@
 - 支持Mac、Windows、Linux系统，支持ARM、x86架构
 - 支持的域名服务商 `Alidns(阿里云)` `Dnspod(腾讯云)` `Cloudflare` `华为云`
 - 支持接口/网卡获取IP
-- 间隔5分钟同步一次
+- 支持以服务的方式运行(v2.8.0后支持)
+- 默认间隔5分钟同步一次
 - 支持多个域名同时解析，公司必备
 - 支持多级域名
-- 网页中配置，简单又方便，可设置登录用户名和密码
+- 网页中配置，简单又方便，可设置 `登录用户名和密码` / `禁止从公网访问`
 - 网页中方便快速查看最近50条日志，不需要跑docker中查看
 - 支持webhook
 
-## 直接使用
+## 系统中使用
 
 - 下载并解压[https://github.com/jeessy2/ddns-go/releases](https://github.com/jeessy2/ddns-go/releases)
-- 双击运行，程序自动打开[http://127.0.0.1:9876](http://127.0.0.1:9876)，修改你的配置
-- [可选] 加入到开机启动中，需自行搜索
-- [可选] 支持启动带参数 `-l`监听地址 `-f`间隔时间(秒)。如：`./ddns-go -l 127.0.0.1:9876 -f 300`
+- 双击运行, 如没有找到配置, 程序自动打开[http://127.0.0.1:9876](http://127.0.0.1:9876)
+- [可选] 安装服务
+  - Mac/Linux: `sudo ./ddns-go -s install` 
+  - Win(以管理员打开cmd): `.\ddns-go.exe -s install`
+  - 安装服务也支持 `-l`监听地址 `-f`同步间隔时间(秒)
+- [可选] 服务卸载
+  - Mac/Linux: `sudo ./ddns-go -s uninstall` 
+  - Win(以管理员打开cmd): `.\ddns-go.exe -s uninstall`
+- [可选] 支持启动带参数 `-l`监听地址 `-f`同步间隔时间(秒)。如：`sudo ./ddns-go -l 127.0.0.1:9876 -f 600`
 
 ## Docker中使用
 
-- 挂载主机目录, 删除容器后配置不会丢失。可替换 `/opt/ddns-go` 为主机上的任意目录, 配置文件为隐藏文件
+- 挂载主机目录, 删除容器后配置不会丢失。可替换 `/opt/ddns-go` 为有权限访问的目录, 配置文件为隐藏文件
 
   ```bash
   docker run -d --name ddns-go --restart=always -p 9876:9876 -v /opt/ddns-go:/root jeessy/ddns-go
@@ -56,7 +63,7 @@
 ## 使用IPv6
 
 - 前提：你的电脑或终端能正常获取IPv6，并能正常访问IPv6
-- Windows/Mac：推荐 [直接执行](#直接执行)，Windows/Mac桌面版的docker不支持`--net=host`
+- Windows/Mac：推荐 [系统中使用](#系统中使用)，Windows/Mac桌面版的docker不支持`--net=host`
 - 群晖：
   - 套件中心下载docker并打开
   - 注册表中搜索`ddns-go`并下载
@@ -69,7 +76,7 @@
   docker run -d --name ddns-go --restart=always --net=host -v /opt/ddns-go:/root jeessy/ddns-go
   ```
 
-- 虚拟机中使用有可能正常获取IPv6，但不能正常访问IPv6, 如: `VMware Workstation` `VirtualBox` ...
+- 虚拟机中使用有可能正常获取IPv6，但不能正常访问IPv6
 - [可选] 使用IPv6后，建议设置登录用户名和密码
 - [可选] 支持启动带参数 `-l`监听地址 `-f`间隔时间(秒)
 
@@ -106,10 +113,6 @@
 ## 开发&自行编译
 
 - 如果喜欢从源代码编译自己的版本，可以使用本项目提供的 Makefile 构建
-- 开发:
-  - 首先使用 `make init` 安装 `bindata`
-  - 使用 `make dev` 动态加载修改后的 `writing.html`
-- 编译:
-  - 如修改了html, 务必使用 `make bindata` 生成编译需要的静态文件
-  - 使用 `make build` 生成本地编译后的 `ddns-go` 可执行文件
-  - 使用 `make build_docker_image` 自行编译 Docker 镜像
+- 开发环境 golang 1.16
+- 使用 `make build` 生成本地编译后的 `ddns-go` 可执行文件
+- 使用 `make build_docker_image` 自行编译 Docker 镜像
